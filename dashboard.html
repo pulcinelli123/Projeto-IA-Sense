@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Sense - home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 180px;
+            background-color: #306429;
+            padding-top: 20px;
+        }
+
+        .sidebar .nav-link {
+            color: white;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #495057;
+            border-radius: 5px;
+        }
+
+        /* menu para a esquerda */
+        .content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+
+        #map{
+            width: 800px;
+            height: 400px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body class="p-4">
+    <div class="sidebar d-flex flex-column p-3">
+        <h4 class="text-white">IA Sense</h4>
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
+                <a href="#home" class="nav-link">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="#sobre" class="nav-link">Relatórios</a>
+            </li>
+            <li class="nav-item">
+                <a href="#contato" class="nav-link">Configurações</a>
+            </li>
+            <li class="nav-item">
+                <a href="#contato" class="nav-link">Sair</a>
+            </li>
+        </ul>
+    </div>
+    <div class="container mt-5 pt-5">
+        <h1>Registros</h1>
+    </div>
+
+
+
+
+    <div class="container">
+        <h2 class="mb-4"></h2>
+
+        <!-- Filtros -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="startDate" class="form-label">Data inicial:</label>
+                <input type="date" id="startDate" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label for="endDate" class="form-label">Data final:</label>
+                <input type="date" id="endDate" class="form-control">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-primary w-100" onclick="filtrarTabela()">Filtrar</button>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-secondary w-100" onclick="resetarFiltro()">Resetar</button>
+            </div>
+        </div>
+
+        <!-- Tabela -->
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Relatório(ID)</th>
+                    <th>Armadilha</th>
+                    <th>Registro</th>
+                    <th>Mariposas</th>
+                    <th>Pulverizar</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabela">
+                <tr>
+                    <td>2025-09-01</td>
+                    <td>Notebook</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>2025-09-05</td>
+                    <td>Mouse</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <td>2025-09-10</td>
+                    <td>Teclado</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>2025-09-15</td>
+                    <td>Monitor</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>2025-09-20</td>
+                    <td>Headset</td>
+                    <td>8</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function filtrarTabela() {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+            const linhas = document.querySelectorAll("#tabela tr");
+
+            linhas.forEach(linha => {
+                const dataTexto = linha.querySelector("td").innerText;
+                const data = new Date(dataTexto);
+
+                let mostrar = true;
+
+                if (startDate && data < new Date(startDate)) {
+                    mostrar = false;
+                }
+                if (endDate && data > new Date(endDate)) {
+                    mostrar = false;
+                }
+
+                linha.style.display = mostrar ? "" : "none";
+            });
+        }
+
+        function resetarFiltro() {
+            document.getElementById("startDate").value = "";
+            document.getElementById("endDate").value = "";
+            const linhas = document.querySelectorAll("#tabela tr");
+            linhas.forEach(linha => linha.style.display = "");
+        }
+    </script>
+
+    <div class="card p-3 mb-3">
+        <h3 class="mb-3">Mapa de Registros</h3>
+        <div id="map" style="height:500px; width: 80%;"></div>
+    </div>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.min.js"></script>
+
+    <script>
+        // Inicializa o mapa com as coordenadas desejadas (vai ser as coordenadas do talhão)
+        var map = L.map('map').setView([-23.423756, -47.365158], 12); // Coordenadas fornecidas
+
+        // Adiciona uma camada de mapa base
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Dados de exemplo: 10 pontos com intensidades variando de 0.1 a 1.0
+        var heatData = [
+            [-23.423756, -47.365158, 0.1, 'Ponto 1 (Intensidade 0.1)'],
+            [-23.424756, -47.365158, 0.2, 'Ponto 2 (Intensidade 0.2)'],
+            [-23.425756, -47.365158, 0.3, 'Ponto 3 (Intensidade 0.3)'],
+            [-23.426756, -47.365158, 0.4, 'Ponto 4 (Intensidade 0.4)'],
+            [-23.427756, -47.365158, 0.5, 'Ponto 5 (Intensidade 0.5)'],
+            [-23.428756, -47.365158, 0.6, 'Ponto 6 (Intensidade 0.6)'],
+            [-23.429756, -47.365158, 0.7, 'Ponto 7 (Intensidade 0.7)'],
+            [-23.430756, -47.365158, 0.8, 'Ponto 8 (Intensidade 0.8)'],
+            [-23.431756, -47.365158, 0.9, 'Ponto 9 (Intensidade 0.9)'],
+            [-23.432756, -47.365158, 1.0, 'Ponto 10 (Intensidade 1.0)']
+        ];
+
+        // Adiciona o mapa de calor
+        var heat = L.heatLayer(heatData.map(function (point) {
+            return [point[0], point[1], point[2]]; // Formato [lat, lng, intensidade]
+        }), { radius: 25, blur: 15, maxZoom: 1 }).addTo(map);
+
+        // Função para calcular a distância entre dois pontos
+        function getDistance(lat1, lon1, lat2, lon2) {
+            var R = 6371; // Raio da Terra em km
+            var dLat = (lat2 - lat1) * Math.PI / 180;
+            var dLon = (lon2 - lon1) * Math.PI / 180;
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c; // Distância em km
+        }
+
+        // Captura o evento de clique no mapa
+        map.on('click', function (e) {
+            var clickedLat = e.latlng.lat;
+            var clickedLng = e.latlng.lng;
+
+            // Encontra o ponto mais próximo
+            var closestPoint = null;
+            var minDistance = Infinity;
+
+            heatData.forEach(function (point) {
+                var distance = getDistance(clickedLat, clickedLng, point[0], point[1]);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestPoint = point;
+                }
+            });
+
+            // Verifica se a distância é razoável (por exemplo, 0.5 km)
+            if (minDistance < 0.5) {
+                // Cria um popup com as informações
+                L.popup()
+                    .setLatLng([closestPoint[0], closestPoint[1]])
+                    .setContent(closestPoint[3]) // Exibe a informação do ponto
+                    .openOn(map);
+            }
+        });
+
+        // Para verificar se o mapa e os dados estão carregando corretamente
+        console.log("Mapa carregado e dados de calor:", heatData);
+    </script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -6,139 +6,292 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IA Sense - home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
             margin: 0;
             padding: 0;
+            background-color: #f8f9fa;
         }
 
-        .sidebar {
+        /* Contêiner para a sidebar e o botão de menu */
+        .sidebar-container {
             position: fixed;
             top: 0;
             left: 0;
             height: 100vh;
-            width: 180px;
-            background-color: #306429;
-            padding-top: 20px;
+            transform: translateX(-200px);
+            transition: transform 0.3s ease-in-out;
+            z-index: 1050;
         }
 
+        .sidebar-container.active {
+            transform: translateX(0);
+        }
+
+        .sidebar {
+            width: 200px;
+            height: 100%;
+            background-color: #306429;
+            padding: 20px 1rem;
+            /* Padding horizontal ajustado */
+        }
+
+        /* Estilo para o link do menu */
         .sidebar .nav-link {
             color: white;
+            padding: 10px 15px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            /* Transição suave */
         }
 
+        /* Estilo para o link quando o mouse está em cima */
         .sidebar .nav-link:hover {
-            background-color: #495057;
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: 5px;
         }
 
-        /* menu para a esquerda */
+        /* Estilo para o link da página ativa */
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            /* Fundo um pouco mais claro */
+            border-radius: 5px;
+        }
+
+        /* Ajusta o tamanho e alinhamento do ícone */
+        .sidebar .nav-link i {
+            font-size: 1.1rem;
+            vertical-align: middle;
+        }
+
+        /* Estilo para o conteúdo principal */
         .content {
             margin-left: 200px;
             padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
         }
 
-        #map{
-            width: 300px;
-            height: 200px;
-            margin: 0 auto;
+        /* Botão para abrir a sidebar em telas pequenas */
+        .menu-toggle {
+            position: absolute;
+            top: 15px;
+            right: -60px;
+            z-index: 1051;
+            display: none;
         }
-        .card{
-            height: 500px;
-            width: 1100px;
-            margin: 0 auto;
+
+        /* Estilo para a sobreposição escura */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+            display: none;
         }
-       
+
+        /* Media Query para telas grandes */
+        @media (min-width: 769px) {
+            .sidebar-container {
+                transform: translateX(0);
+            }
+
+            .menu-toggle {
+                display: none !important;
+            }
+
+            .content {
+                margin-left: 200px;
+            }
+        }
+
+        /* Media Query para telas pequenas */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .content {
+                margin-left: 0;
+                padding-top: 60px;
+            }
+        }
+
+        /* Estilos do mapa e card para responsividade */
+        #map {
+            width: 100% !important;
+            height: 350px;
+            margin: 0;
+        }
+
+        .card {
+           height: auto;
+           width: 100%;
+           margin: 0 auto;
+           border-radius: 8px;
+           box-shadow: 0 4px 6px rgb(0,0,0.1);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .btn-primary {
+            background-color: #306429;
+            border-color: #306429;
+        }
+        .btn-primary:houver {
+            background-color: #2a5b25;
+            border-color: #2a5b25;
+        }
     </style>
 </head>
 
-<body class="p-4">
-    <div class="sidebar d-flex flex-column p-3">
-        <h4 class="text-white">IA Sense</h4>
-        <ul class="nav nav-pills flex-column">
-            <li class="nav-item">
-                <a href="#home" class="nav-link">Dashboard</a>
-            </li>
-            <li class="nav-item">
-                <a href="#sobre" class="nav-link">Relatórios</a>
-            </li>
-            <li class="nav-item">
-                <a href="#contato" class="nav-link">Configurações</a>
-            </li>
-            <li class="nav-item">
-                <a href="#contato" class="nav-link">Sair</a>
-            </li>
-        </ul>
+<body>
+    <div class="sidebar-container" id="sidebar-container">
+        <div class="sidebar d-flex flex-column">
+            <h4 class="text-white">IA Sense</h4>
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="bi bi-house-door me-2"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="relatorios.html" class="nav-link">
+                        <i class="bi bi-graph-up me-2"></i>
+                        Relatórios
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contato" class="nav-link">
+                        <i class="bi bi-gear me-2"></i>
+                        Configurações
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        Sair
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <button class="btn btn-primary menu-toggle" id="menu-toggle">
+            <i class="bi bi-list"></i>
+        </button>
     </div>
-    <div class="container mt-5 pt-5">
-        <h1>Registros</h1>
-    </div>
 
+    <div class="overlay" id="overlay"></div>
 
+    <div class="content">
+        <div class="container mt-3">
+            <h1>Registros</h1>
+        </div>
 
-    <div class="container">
-        <h2 class="mb-4"></h2>
-
-        <!-- Filtros -->
-        <div class="row mb-3">
-            <div class="col-md-3">
-                <label for="startDate" class="form-label">Data inicial:</label>
-                <input type="date" id="startDate" class="form-control">
+        <div class="container">
+            <h2 class="mb-4"></h2>
+            <div class="row mb-3">
+                <div class="col-6 col-md-3">
+                    <label for="startDate" class="form-label">Data inicial:</label>
+                    <input type="date" id="startDate" class="form-control">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label for="endDate" class="form-label">Data final:</label>
+                    <input type="date" id="endDate" class="form-control">
+                </div>
+                <div class="col-6 col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary w-100" onclick="filtrarTabela()">Filtrar</button>
+                </div>
+                <div class="col-6 col-md-2 d-flex align-items-end">
+                    <button class="btn btn-secondary w-100" onclick="resetarFiltro()">Resetar</button>
+                </div>
             </div>
-            <div class="col-md-3">
-                <label for="endDate" class="form-label">Data final:</label>
-                <input type="date" id="endDate" class="form-control">
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button class="btn btn-primary w-100" onclick="filtrarTabela()">Filtrar</button>
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button class="btn btn-secondary w-100" onclick="resetarFiltro()">Resetar</button>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Relatório(ID)</th>
+                            <th>Armadilha</th>
+                            <th>Registro</th>
+                            <th>Mariposas</th>
+                            <th>Pulverizar</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela">
+                        <tr>
+                            <td>2025-09-01</td>
+                            <td>Notebook</td>
+                            <td>5</td>
+                            <td>Sim</td>
+                            <td><button class="btn btn-sm btn-info">Ver</button></td>
+                            <td><button class="btn btn-sm btn-success">Detalhes</button></td>
+                        </tr>
+                        <tr>
+                            <td>2025-09-05</td>
+                            <td>Mouse</td>
+                            <td>12</td>
+                            <td>Não</td>
+                            <td><button class="btn btn-sm btn-info">Ver</button></td>
+                            <td><button class="btn btn-sm btn-success">Detalhes</button></td>
+                        </tr>
+                        <tr>
+                            <td>2025-09-10</td>
+                            <td>Teclado</td>
+                            <td>7</td>
+                            <td>Sim</td>
+                            <td><button class="btn btn-sm btn-info">Ver</button></td>
+                            <td><button class="btn btn-sm btn-success">Detalhes</button></td>
+                        </tr>
+                        <tr>
+                            <td>2025-09-15</td>
+                            <td>Monitor</td>
+                            <td>3</td>
+                            <td>Não</td>
+                            <td><button class="btn btn-sm btn-info">Ver</button></td>
+                            <td><button class="btn btn-sm btn-success">Detalhes</button></td>
+                        </tr>
+                        <tr>
+                            <td>2025-09-20</td>
+                            <td>Headset</td>
+                            <td>8</td>
+                            <td>Sim</td>
+                            <td><button class="btn btn-sm btn-info">Ver</button></td>
+                            <td><button class="btn btn-sm btn-success">Detalhes</button></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <!-- Tabela -->
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>Relatório(ID)</th>
-                    <th>Armadilha</th>
-                    <th>Registro</th>
-                    <th>Mariposas</th>
-                    <th>Pulverizar</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="tabela">
-                <tr>
-                    <td>2025-09-01</td>
-                    <td>Notebook</td>
-                    <td>5</td>
-                </tr>
-                <tr>
-                    <td>2025-09-05</td>
-                    <td>Mouse</td>
-                    <td>12</td>
-                </tr>
-                <tr>
-                    <td>2025-09-10</td>
-                    <td>Teclado</td>
-                    <td>7</td>
-                </tr>
-                <tr>
-                    <td>2025-09-15</td>
-                    <td>Monitor</td>
-                    <td>3</td>
-                </tr>
-                <tr>
-                    <td>2025-09-20</td>
-                    <td>Headset</td>
-                    <td>8</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="card p-3 mb-3">
+            <h3 class="mb-3">Mapa de Registros</h3>
+            <div id="map"></div>
+        </div>
     </div>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
+        document.getElementById('menu-toggle').addEventListener('click', function () {
+            document.getElementById('sidebar-container').classList.toggle('active');
+            document.getElementById('overlay').style.display = 'block';
+        });
+
+        document.getElementById('overlay').addEventListener('click', function () {
+            document.getElementById('sidebar-container').classList.remove('active');
+            this.style.display = 'none';
+        });
+
         function filtrarTabela() {
             const startDate = document.getElementById("startDate").value;
             const endDate = document.getElementById("endDate").value;
@@ -147,7 +300,6 @@
             linhas.forEach(linha => {
                 const dataTexto = linha.querySelector("td").innerText;
                 const data = new Date(dataTexto);
-
                 let mostrar = true;
 
                 if (startDate && data < new Date(startDate)) {
@@ -167,31 +319,13 @@
             const linhas = document.querySelectorAll("#tabela tr");
             linhas.forEach(linha => linha.style.display = "");
         }
-    </script>
 
-
-    <!--Mapa-->
-    <div class="card p-3 mb-3">
-        <h3 class="mb-3">Mapa de Registros</h3>
-        <div id="map" style="height:500px; width: 100%;"></div>
-    </div>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.min.js"></script>
-
-    <script>
-        // Inicializa o mapa com as coordenadas desejadas (vai ser as coordenadas do talhão)
-        var map = L.map('map').setView([-23.423756, -47.365158], 12); // Coordenadas fornecidas
-
-        // Adiciona uma camada de mapa base
+        var map = L.map('map').setView([-23.423756, -47.365158], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // Dados de exemplo: 10 pontos com intensidades variando de 0.1 a 1.0
         var heatData = [
             [-23.423756, -47.365158, 0.1, 'Ponto 1 (Intensidade 0.1)'],
             [-23.424756, -47.365158, 0.2, 'Ponto 2 (Intensidade 0.2)'],
@@ -205,29 +339,24 @@
             [-23.432756, -47.365158, 1.0, 'Ponto 10 (Intensidade 1.0)']
         ];
 
-        // Adiciona o mapa de calor
-        var heat = L.heatLayer(heatData.map(function (point) {
-            return [point[0], point[1], point[2]]; // Formato [lat, lng, intensidade]
+        L.heatLayer(heatData.map(function (point) {
+            return [point[0], point[1], point[2]];
         }), { radius: 25, blur: 15, maxZoom: 1 }).addTo(map);
 
-        // Função para calcular a distância entre dois pontos
         function getDistance(lat1, lon1, lat2, lon2) {
-            var R = 6371; // Raio da Terra em km
+            var R = 6371;
             var dLat = (lat2 - lat1) * Math.PI / 180;
             var dLon = (lon2 - lon1) * Math.PI / 180;
             var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                 Math.sin(dLon / 2) * Math.sin(dLon / 2);
             var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            return R * c; // Distância em km
+            return R * c;
         }
 
-        // Captura o evento de clique no mapa
         map.on('click', function (e) {
             var clickedLat = e.latlng.lat;
             var clickedLng = e.latlng.lng;
-
-            // Encontra o ponto mais próximo
             var closestPoint = null;
             var minDistance = Infinity;
 
@@ -239,24 +368,14 @@
                 }
             });
 
-            // Verifica se a distância é razoável (por exemplo, 0.5 km)
             if (minDistance < 0.5) {
-                // Cria um popup com as informações
                 L.popup()
                     .setLatLng([closestPoint[0], closestPoint[1]])
-                    .setContent(closestPoint[3]) // Exibe a informação do ponto
+                    .setContent(closestPoint[3])
                     .openOn(map);
             }
         });
-
-        // Para verificar se o mapa e os dados estão carregando corretamente
-        console.log("Mapa carregado e dados de calor:", heatData);
     </script>
-
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
